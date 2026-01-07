@@ -86,12 +86,21 @@
             </select>
         </div>
 
-        <!-- Agama -->
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Agama</label>
-            <input type="text" name="agama" class="{{ $field }}"
-                value="{{ old('agama', $penduduk->agama ?? '') }}">
-        </div>
+<!-- Agama -->
+<div>
+    <label class="block text-sm font-semibold text-gray-700 mb-2">Agama</label>
+    @php
+        $agamaList = ['Islam','Kristen Protestan','Katolik','Hindu','Buddha','Konghucu'];
+    @endphp
+    <select name="agama" class="{{ $field }}">
+        @foreach($agamaList as $a)
+            <option value="{{ $a }}" {{ old('agama', $penduduk->agama ?? '') == $a ? 'selected' : '' }}>
+                {{ $a }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
         <!-- Status Perkawinan -->
         <div>
