@@ -13,21 +13,30 @@
 
     <td class="px-4 py-3">{{ $p->jenis_kelamin }}</td>
 
-    <td class="px-4 py-3 text-center space-x-2">
-        <a href="{{ route('penduduk.edit', $p->nik) }}"
-           class="bg-yellow-500 text-white px-3 py-1 rounded text-xs">
-            Edit
-        </a>
+<td class="px-4 py-3 text-center space-x-2">
+    <!-- Tombol Detail -->
+    <a href="{{ route('penduduk.show', $p->nik) }}"
+       class="bg-blue-500 text-white px-3 py-1 rounded text-xs">
+        Detail
+    </a>
 
-        <form action="{{ route('penduduk.destroy', $p->nik) }}"
-              method="POST" class="inline">
-            @csrf
-            @method('DELETE')
-            <button class="bg-red-600 text-white px-3 py-1 rounded text-xs">
-                Hapus
-            </button>
-        </form>
-    </td>
+    <!-- Tombol Edit -->
+    <a href="{{ route('penduduk.edit', $p->nik) }}"
+       class="bg-yellow-500 text-white px-3 py-1 rounded text-xs">
+        Edit
+    </a>
+
+    <!-- Tombol Hapus -->
+    <form action="{{ route('penduduk.destroy', $p->nik) }}"
+          method="POST" class="inline">
+        @csrf
+        @method('DELETE')
+        <button class="bg-red-600 text-white px-3 py-1 rounded text-xs">
+            Hapus
+        </button>
+    </form>
+</td>
+
 </tr>
 @empty
 <tr>

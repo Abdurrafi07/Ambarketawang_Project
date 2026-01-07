@@ -36,7 +36,13 @@
             Export Excel
         </a>
 
-        {{-- Title + Button --}}
+        {{-- Trash --}}
+        <a href="{{ route('penduduk.trash') }}"
+           class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm">
+            🗑️ Trash
+        </a>
+
+        {{-- Title + Button Tambah --}}
         <div class="flex items-center gap-4">
             <h3 class="text-2xl font-bold text-gray-700">Data Penduduk</h3>
             <a href="{{ route('penduduk.create') }}"

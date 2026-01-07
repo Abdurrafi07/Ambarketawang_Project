@@ -44,7 +44,7 @@
     <div class="space-y-4">
 
       <label class="block text-sm font-medium text-gray-700">NIK Jenazah</label>
-      <input type="text" name="nik_jenazah" id="nik_jenazah" placeholder="NIK Jenazah"
+      <input type="number" name="nik_jenazah" id="nik_jenazah" placeholder="NIK Jenazah"
         class="w-full border-gray-300 rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
 
       <label class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
@@ -126,7 +126,7 @@
     <div class="space-y-4">
 
       <label class="block text-sm font-medium text-gray-700">NIK {{ $data['title'] }}</label>
-      <input type="text" id="nik_{{ $data['prefix'] }}" name="nik_{{ $data['prefix'] }}" placeholder="NIK"
+      <input type="number" id="nik_{{ $data['prefix'] }}" name="nik_{{ $data['prefix'] }}" placeholder="NIK"
         class="w-full border-gray-300 rounded-xl py-3 px-4">
 
       <label class="block text-sm font-medium text-gray-700">Nama Lengkap {{ $data['title'] }}</label>

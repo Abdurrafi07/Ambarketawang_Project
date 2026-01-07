@@ -64,34 +64,24 @@ Route::middleware('auth')->group(function () {
     Route::prefix('dashboard/surat')->group(function () {
         Route::get('/kematian', [DashboardController::class, 'formKematian'])
             ->name('dashboard.surat.kematian');
-
         Route::get('/kelahiran', [DashboardController::class, 'formKelahiran'])
             ->name('dashboard.surat.kelahiran');
-
         Route::get('/domisili', [DashboardController::class, 'formDomisili'])
             ->name('dashboard.surat.domisili');
-
         Route::get('/pernikahan', [DashboardController::class, 'formPernikahan'])
             ->name('dashboard.surat.pernikahan');
-
         Route::get('/update', [DashboardController::class, 'formUpdate'])
             ->name('dashboard.surat.update');
     });
 
     /*
     |--------------------------------------------------------------------------
-    | Surat Generic (Kalau Masih Dipakai)
+    | Surat Generic
     |--------------------------------------------------------------------------
     */
-    Route::get('/surat/{jenis}', [SuratController::class, 'form'])
-        ->name('surat.form');
-
-    Route::post('/surat/preview', [SuratController::class, 'preview'])
-        ->name('surat.preview');
-
-    Route::post('/surat/print/{jenis}', [SuratController::class, 'print'])
-        ->name('surat.print');
-
+    Route::get('/surat/{jenis}', [SuratController::class, 'form'])->name('surat.form');
+    Route::post('/surat/preview', [SuratController::class, 'preview'])->name('surat.preview');
+    Route::post('/surat/print/{jenis}', [SuratController::class, 'print'])->name('surat.print');
     Route::post('/surat/preview/kelahiran', [KelahiranController::class, 'preview'])
         ->name('surat.preview.kelahiran');
 
@@ -103,14 +93,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/penduduk/{nik}', [KematianController::class, 'cariPenduduk']);
     Route::get('/api/pernikahan/penduduk/{nik}', [PernikahanController::class, 'cariPenduduk'])
         ->name('api.pernikahan.cariPenduduk');
-
     Route::get('/kelahiran/cari/{nik}', [KelahiranController::class, 'cariPenduduk']);
     Route::get('/kematian/cari/{nik}', [KematianController::class, 'cariPenduduk']);
 
     /*
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     | Generate LaTeX (.tex) Surat
-    |-------------------------------------------------------------------------- 
+    |--------------------------------------------------------------------------
     */
     Route::post('/surat/generate-tex', [SuratController::class, 'generateLatex'])
         ->name('surat.generateLatex');
@@ -120,22 +109,25 @@ Route::middleware('auth')->group(function () {
     | Kartu Keluarga
     |--------------------------------------------------------------------------
     */
-    Route::get('/kartu-keluarga', [KartuKeluargaController::class, 'index'])
-        ->name('kk.index');
-
-    Route::get('/kartu-keluarga/{no_kk}', [KartuKeluargaController::class, 'show'])
-        ->name('kk.show');
+    Route::get('/kartu-keluarga', [KartuKeluargaController::class, 'index'])->name('kk.index');
+    Route::get('/kartu-keluarga/{no_kk}', [KartuKeluargaController::class, 'show'])->name('kk.show');
 
     /*
     |--------------------------------------------------------------------------
     | IMPORT / EXPORT EXCEL
     |--------------------------------------------------------------------------
     */
-    Route::get('/penduduk/export/excel', [PendudukController::class, 'export'])
-        ->name('penduduk.export');
+    Route::get('/penduduk/export/excel', [PendudukController::class, 'export'])->name('penduduk.export');
+    Route::post('/penduduk/import/excel', [PendudukController::class, 'import'])->name('penduduk.import');
 
-    Route::post('/penduduk/import/excel', [PendudukController::class, 'import'])
-        ->name('penduduk.import');
+    /*
+    |--------------------------------------------------------------------------
+    | SOFT DELETE PENDUDUK
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/penduduk/trash', [PendudukController::class, 'trash'])->name('penduduk.trash');
+    Route::get('/penduduk/{nik}/restore', [PendudukController::class, 'restore'])->name('penduduk.restore');
+    Route::delete('/penduduk/{nik}/force-delete', [PendudukController::class, 'forceDelete'])->name('penduduk.forceDelete');
 
     /*
     |--------------------------------------------------------------------------

@@ -48,8 +48,8 @@
 
     <div>
       <label for="nik_anak" class="block text-sm font-medium text-gray-700">NIK</label>
-      <input id="nik_anak" name="nik_anak" type="text"
-             class="w-full border border-gray-300 rounded-md p-2">
+      <input id="nik_anak" name="nik_anak" type="number"
+             class="w-full border border-gray-300 rounded-md p-2" maxlength="16" minlength="16" placeholder="16 digit NIK">
     </div>
 
     <div>
@@ -164,7 +164,7 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700">NIK</label>
-        <input id="nik_ibu" name="nik_ibu" type="text" class="w-full border border-gray-300 rounded-md p-2">
+        <input id="nik_ibu" name="nik_ibu" type="nubmer" class="w-full border border-gray-300 rounded-md p-2">
       </div>
 
       <div>
@@ -217,7 +217,7 @@
 
       <div>
         <label class="block text-sm font-medium text-gray-700">NIK</label>
-        <input id="nik_ayah" name="nik_ayah" type="text" class="w-full border border-gray-300 rounded-md p-2">
+        <input id="nik_ayah" name="nik_ayah" type="number" class="w-full border border-gray-300 rounded-md p-2">
       </div>
 
       <div>
@@ -264,7 +264,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700">NIK</label>
-          <input id="nik_saksi1" name="nik_saksi1" type="text" class="w-full border border-gray-300 rounded-md p-2">
+          <input id="nik_saksi1" name="nik_saksi1" type="number" class="w-full border border-gray-300 rounded-md p-2">
         </div>
 
         <div>
@@ -292,7 +292,7 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700">NIK</label>
-          <input id="nik_saksi2" name="nik_saksi2" type="text" class="w-full border border-gray-300 rounded-md p-2">
+          <input id="nik_saksi2" name="nik_saksi2" type="number" class="w-full border border-gray-300 rounded-md p-2">
         </div>
 
         <div>

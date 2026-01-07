@@ -49,7 +49,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-semibold mb-1 text-black">Nomor Kartu Keluarga</label>
-                <input type="text" name="no_kk" class="input-field">
+                <input type="number" name="no_kk" class="input-field" maxlength="16" minlength="16" placeholder="16 digit nomor KK">
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1 text-black">Nama Kepala Keluarga</label>
@@ -65,7 +65,7 @@
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1 text-black">Kode Pos</label>
-                <input type="text" name="kode_pos" class="input-field">
+                <input type="number" name="kode_pos" class="input-field">
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1 text-black">Telepon</label>
@@ -80,7 +80,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-semibold mb-1 text-black">NIK Pemohon</label>
-                <input type="text" name="nikInput" class="input-field">
+                <input type="number" name="nikInput" class="input-field" maxlength="16" minlength="16" placeholder="16 digit NIK">
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1 text-black">Nama Lengkap</label>
@@ -144,7 +144,7 @@
                     <tr>
                         <td class="border px-3 py-2 text-center text-blue-700 font-semibold">{{ $i + 1 }}</td>
                         <td class="border px-3 py-2">
-                            <input type="text" name="anggota[{{ $i }}][nik]" class="w-full border-none outline-none text-black px-2 py-1">
+                            <input type="number" name="anggota[{{ $i }}][nik]" class="w-full border-none outline-none text-black px-2 py-1">
                         </td>
                         <td class="border px-3 py-2">
                             <input type="text" name="anggota[{{ $i }}][nama]" class="w-full border-none outline-none text-black px-2 py-1">
@@ -197,12 +197,34 @@ document.getElementById('domisiliForm').addEventListener('submit', function(e) {
     let errors = [];
 
     requiredFields.forEach(field => {
-        // Skip table anggota keluarga
-        if (field.name.startsWith('anggota')) return;
-
+        // Validasi field kosong (kecuali anggota yang kosong boleh)
         if (!field.value.trim()) {
-            let label = field.closest('div').querySelector('label')?.innerText || field.name;
-            errors.push(label + ' harus diisi.');
+            // Field anggota boleh kosong, jadi skip
+            if (!field.name.startsWith('anggota')) {
+                let label = field.closest('div').querySelector('label')?.innerText || field.name;
+                errors.push(label + ' harus diisi.');
+            }
+        }
+
+        // Validasi NIK pemohon
+        if (field.name === 'nikInput') {
+            if (field.value.trim().length !== 16 || !/^\d{16}$/.test(field.value.trim())) {
+                errors.push('NIK Pemohon harus 16 digit angka.');
+            }
+        }
+
+        // Validasi No KK
+        if (field.name === 'no_kk') {
+            if (field.value.trim().length !== 16 || !/^\d{16}$/.test(field.value.trim())) {
+                errors.push('Nomor Kartu Keluarga harus 16 digit angka.');
+            }
+        }
+
+        // Validasi NIK anggota keluarga jika diisi
+        if (field.name.startsWith('anggota') && field.name.endsWith('[nik]')) {
+            if (field.value.trim() && (!/^\d{16}$/.test(field.value.trim()))) {
+                errors.push('NIK Anggota harus 16 digit angka jika diisi.');
+            }
         }
     });
 
@@ -213,5 +235,4 @@ document.getElementById('domisiliForm').addEventListener('submit', function(e) {
     }
 });
 </script>
-
 @endsection

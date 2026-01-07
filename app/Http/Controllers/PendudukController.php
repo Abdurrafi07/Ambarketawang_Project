@@ -12,53 +12,52 @@ use App\Imports\PendudukImport;
 
 class PendudukController extends Controller
 {
+    // LIST DATA PENDUDUK
+    public function index(Request $request)
+    {
+        $search = trim($request->search);
+        $isSearch = $search !== '';
 
-public function index(Request $request)
-{
-    $search = trim($request->search);
-    $isSearch = $search !== '';
+        $query = Penduduk::with('alamat');
 
-    $query = Penduduk::with('alamat');
+        if ($isSearch) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nik', 'like', "%{$search}%")
+                  ->orWhere('nama', 'like', "%{$search}%")
+                  ->orWhere('no_kk', 'like', "%{$search}%");
+            });
+        }
 
-    if ($isSearch) {
-        $query->where(function ($q) use ($search) {
-            $q->where('nik', 'like', "%{$search}%")
-              ->orWhere('nama', 'like', "%{$search}%")
-              ->orWhere('no_kk', 'like', "%{$search}%");
-        });
+        $penduduk = $query->orderBy('nama')->paginate(10);
+
+        if ($request->ajax()) {
+            return view('penduduk.partials.table', compact('penduduk'));
+        }
+
+        return view('penduduk.index', compact('penduduk'));
     }
 
-    $penduduk = $query->orderBy('nama')->paginate(10);
-
-    if ($request->ajax()) {
-        return view('penduduk.partials.table', compact('penduduk'));
+    // DETAIL DATA
+    public function show($nik)
+    {
+        $penduduk = Penduduk::with(['alamat', 'kartuKeluarga'])->findOrFail($nik);
+        return view('penduduk.show', compact('penduduk'));
     }
 
-    return view('penduduk.index', compact('penduduk'));
-}
-
+    // FORM TAMBAH DATA
     public function create()
     {
         return view('penduduk.create');
     }
 
+    // SIMPAN DATA
     public function store(Request $request)
     {
         $validated = $request->validate(
             [
-                'nik' => [
-                    'required',
-                    'digits:16',
-                    'unique:penduduk,nik'
-                ],
-
-                'no_kk' => [
-                    'required',
-                    'digits:16'
-                ],
-
+                'nik' => ['required', 'digits:16', 'unique:penduduk,nik'],
+                'no_kk' => ['required', 'digits:16'],
                 'kepala_keluarga' => 'nullable|string|max:100',
-
                 'nama_jalan' => 'required|string|max:150',
                 'rt' => 'required|string|max:5',
                 'rw' => 'required|string|max:5',
@@ -67,7 +66,6 @@ public function index(Request $request)
                 'kota' => 'required|string|max:50',
                 'provinsi' => 'required|string|max:50',
                 'kode_pos' => 'nullable|string|max:10',
-
                 'nama' => 'required',
                 'tempat_lahir' => 'required',
                 'tanggal_lahir' => 'required|date',
@@ -93,7 +91,6 @@ public function index(Request $request)
                 'nik' => 'NIK',
                 'no_kk' => 'Nomor KK',
                 'kepala_keluarga' => 'Kepala Keluarga',
-
                 'nama_jalan' => 'Nama Jalan',
                 'rt' => 'RT',
                 'rw' => 'RW',
@@ -102,7 +99,6 @@ public function index(Request $request)
                 'kota' => 'Kota',
                 'provinsi' => 'Provinsi',
                 'kode_pos' => 'Kode Pos',
-
                 'nama' => 'Nama Lengkap',
                 'tempat_lahir' => 'Tempat Lahir',
                 'tanggal_lahir' => 'Tanggal Lahir',
@@ -119,8 +115,7 @@ public function index(Request $request)
             ]
         );
 
-
-        // ----------- ALAMAT BUAT BARU -----------
+        // Simpan alamat baru
         $alamat = Alamat::create([
             'nama_jalan' => $request->nama_jalan,
             'rt' => $request->rt,
@@ -132,8 +127,8 @@ public function index(Request $request)
             'kode_pos' => $request->kode_pos,
         ]);
 
-        // ----------- CEK KK ADA ATAU BUAT BARU -----------
-        $kk = KartuKeluarga::firstOrCreate(
+        // Cek KK, buat baru jika belum ada
+        $kk = KartuKeluarga::withTrashed()->firstOrCreate(
             ['no_kk' => $request->no_kk],
             [
                 'kepala_keluarga' => $request->kepala_keluarga ?? $request->nama,
@@ -141,7 +136,7 @@ public function index(Request $request)
             ]
         );
 
-        // ----------- SIMPAN DATA PENDUDUK -----------
+        // Simpan data penduduk
         Penduduk::create([
             'nik' => $request->nik,
             'no_kk' => $kk->no_kk,
@@ -164,24 +159,21 @@ public function index(Request $request)
         return redirect()->route('penduduk.index')->with('success', 'Data berhasil ditambahkan');
     }
 
+    // FORM EDIT
     public function edit($nik)
     {
         $penduduk = Penduduk::with(['alamat', 'kartuKeluarga'])->findOrFail($nik);
         return view('penduduk.edit', compact('penduduk'));
     }
 
+    // UPDATE DATA
     public function update(Request $request, $nik)
     {
         $penduduk = Penduduk::findOrFail($nik);
 
         $validated = $request->validate([
-            'no_kk' => [
-                'required',
-                'digits:16'
-            ],
-
+            'no_kk' => ['required', 'digits:16'],
             'kepala_keluarga' => 'nullable|string|max:100',
-
             'nama_jalan' => 'required|string|max:150',
             'rt' => 'required|string|max:5',
             'rw' => 'required|string|max:5',
@@ -190,7 +182,6 @@ public function index(Request $request)
             'kota' => 'required|string|max:50',
             'provinsi' => 'required|string|max:50',
             'kode_pos' => 'nullable|string|max:10',
-
             'nama' => 'required',
             'tempat_lahir' => 'required',
             'tanggal_lahir' => 'required|date',
@@ -204,7 +195,7 @@ public function index(Request $request)
             'nama_ibu' => 'required',
         ]);
 
-        // ----------- UPDATE ALAMAT -----------
+        // Update alamat
         $penduduk->alamat->update([
             'nama_jalan' => $request->nama_jalan,
             'rt' => $request->rt,
@@ -216,8 +207,8 @@ public function index(Request $request)
             'kode_pos' => $request->kode_pos,
         ]);
 
-        // ----------- UPDATE OR CREATE KK -----------
-        $kk = KartuKeluarga::firstOrCreate(
+        // Update atau create KK
+        $kk = KartuKeluarga::withTrashed()->firstOrCreate(
             ['no_kk' => $request->no_kk],
             [
                 'kepala_keluarga' => $request->kepala_keluarga ?? $request->nama,
@@ -225,6 +216,7 @@ public function index(Request $request)
             ]
         );
 
+        // Update penduduk
         $penduduk->update([
             'no_kk' => $request->no_kk,
             'nama' => $request->nama,
@@ -245,19 +237,51 @@ public function index(Request $request)
         return redirect()->route('penduduk.index')->with('success', 'Data berhasil diperbarui');
     }
 
+    // SOFT DELETE
     public function destroy($nik)
     {
         $penduduk = Penduduk::findOrFail($nik);
-        $penduduk->delete();
 
-        return redirect()->route('penduduk.index')->with('success', 'Data berhasil dihapus');
+        if ($penduduk->trashed()) {
+            return redirect()->route('penduduk.index')->with('info', 'Data sudah ada di sampah');
+        }
+
+        $penduduk->delete();
+        return redirect()->route('penduduk.index')->with('success', 'Data berhasil dipindahkan ke sampah');
     }
 
-        public function export()
+    // LIST DATA YANG DI SOFT DELETE
+    public function trash()
+    {
+        $penduduk = Penduduk::onlyTrashed()->paginate(10);
+        return view('penduduk.trash', compact('penduduk'));
+    }
+
+    // RESTORE DATA
+    public function restore($nik)
+    {
+        $penduduk = Penduduk::withTrashed()->findOrFail($nik);
+        $penduduk->restore();
+
+        return redirect()->route('penduduk.trash')->with('success', 'Data berhasil dikembalikan');
+    }
+
+    // HAPUS PERMANEN
+    public function forceDelete($nik)
+    {
+        $penduduk = Penduduk::withTrashed()->findOrFail($nik);
+        $penduduk->forceDelete();
+
+        return redirect()->route('penduduk.trash')->with('success', 'Data berhasil dihapus permanen');
+    }
+
+    // EXPORT DATA
+    public function export()
     {
         return Excel::download(new PendudukExport, 'penduduk.xlsx');
     }
 
+    // IMPORT DATA
     public function import(Request $request)
     {
         $request->validate([
@@ -269,49 +293,3 @@ public function index(Request $request)
         return back()->with('success', 'Data penduduk berhasil diimport');
     }
 }
-
-
-// class PendudukController extends Controller
-// {
-//     public function index(Request $request)
-//     {
-//         $search = $request->get('search');
-
-//         $query = DB::table('penduduk')
-//             ->join('kk', 'penduduk.no_kk', '=', 'kk.no_kk')
-//             ->leftJoin('alamat', 'penduduk.alamat_id', '=', 'alamat.id')
-//             ->select(
-//                 'penduduk.*',
-//                 'kk.dusun',
-//                 'kk.rw',
-//                 'kk.rt',
-//                 DB::raw("
-//                     CONCAT_WS(', ',
-//                         alamat.nama_jalan,
-//                         CONCAT('RT ', alamat.rt),
-//                         CONCAT('RW ', alamat.rw),
-//                         alamat.kelurahan,
-//                         alamat.kecamatan,
-//                         alamat.kota,
-//                         alamat.provinsi,
-//                         alamat.kode_pos
-//                     ) as alamat_lengkap
-//                 ")
-//             );
-
-//         if ($search) {
-//             $query->where(function ($q) use ($search) {
-//                 $q->where('penduduk.nik', 'like', "%{$search}%")
-//                   ->orWhere('penduduk.no_kk', 'like', "%{$search}%")
-//                   ->orWhere('penduduk.nama', 'like', "%{$search}%")
-//                   ->orWhere('alamat.nama_jalan', 'like', "%{$search}%")
-//                   ->orWhere('alamat.kelurahan', 'like', "%{$search}%")
-//                   ->orWhere('alamat.kecamatan', 'like', "%{$search}%");
-//             });
-//         }
-
-//         $penduduk = $query->orderBy('penduduk.nama')->paginate(15);
-
-//         return view('penduduk.index', compact('penduduk', 'search'));
-//     }
-// }

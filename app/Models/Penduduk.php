@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Penduduk extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'penduduk';
     protected $primaryKey = 'nik';
@@ -33,6 +34,8 @@ class Penduduk extends Model
         'alamat_id',
         'is_wafat',
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function kartuKeluarga()
     {
