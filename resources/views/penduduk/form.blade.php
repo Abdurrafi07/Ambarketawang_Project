@@ -36,7 +36,7 @@
 
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">NIK</label>
-            <input type="text" name="nik"
+            <input type="number" name="nik"
                 class="{{ $field }} @error('nik') border-red-500 bg-red-50 @enderror"
                 value="{{ old('nik', $penduduk->nik ?? '') }}"
                 {{ isset($penduduk) ? 'readonly' : '' }}>
@@ -51,9 +51,8 @@
         <!-- No KK -->
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">No KK</label>
-            <input type="text" name="no_kk" class="{{ $field }}"
+            <input type="number" name="no_kk" class="{{ $field }}"
                 value="{{ old('no_kk', $penduduk->no_kk ?? '') }}">
-            <small class="text-gray-500">Jika belum ada akan dibuat otomatis.</small>
         </div>
 
         <!-- Nama -->
