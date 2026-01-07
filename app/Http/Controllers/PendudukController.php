@@ -12,15 +12,12 @@ use App\Imports\PendudukImport;
 
 class PendudukController extends Controller
 {
-    // LIST DATA PENDUDUK
     public function index(Request $request)
     {
         $search = trim($request->search);
-        $isSearch = $search !== '';
-
         $query = Penduduk::with('alamat');
 
-        if ($isSearch) {
+        if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('nik', 'like', "%{$search}%")
                   ->orWhere('nama', 'like', "%{$search}%")
@@ -37,97 +34,52 @@ class PendudukController extends Controller
         return view('penduduk.index', compact('penduduk'));
     }
 
-    // DETAIL DATA
     public function show($nik)
     {
         $penduduk = Penduduk::with(['alamat', 'kartuKeluarga'])->findOrFail($nik);
         return view('penduduk.show', compact('penduduk'));
     }
 
-    // FORM TAMBAH DATA
     public function create()
     {
         return view('penduduk.create');
     }
 
-    // SIMPAN DATA
     public function store(Request $request)
     {
-        $validated = $request->validate(
-            [
-                'nik' => ['required', 'digits:16', 'unique:penduduk,nik'],
-                'no_kk' => ['required', 'digits:16'],
-                'kepala_keluarga' => 'nullable|string|max:100',
-                'nama_jalan' => 'required|string|max:150',
-                'rt' => 'required|string|max:5',
-                'rw' => 'required|string|max:5',
-                'kelurahan' => 'required|string|max:50',
-                'kecamatan' => 'required|string|max:50',
-                'kota' => 'required|string|max:50',
-                'provinsi' => 'required|string|max:50',
-                'kode_pos' => 'nullable|string|max:10',
-                'nama' => 'required',
-                'tempat_lahir' => 'required',
-                'tanggal_lahir' => 'required|date',
-                'jenis_kelamin' => 'required',
-                'agama' => 'required',
-                'status_perkawinan' => 'required',
-                'pendidikan' => 'required',
-                'pekerjaan' => 'required',
-                'hubungan_dalam_keluarga' => 'required',
-                'nama_ayah' => 'required',
-                'nama_ibu' => 'required',
-                'golongan_darah' => 'nullable',
-                'kewarganegaraan' => 'required',
-            ],
-            [
-                'required' => ':attribute wajib diisi.',
-                'string'   => ':attribute harus berupa teks.',
-                'max'      => ':attribute maksimal :max karakter.',
-                'date'     => ':attribute harus berupa tanggal yang valid.',
-                'unique'   => ':attribute sudah terdaftar.',
-            ],
-            [
-                'nik' => 'NIK',
-                'no_kk' => 'Nomor KK',
-                'kepala_keluarga' => 'Kepala Keluarga',
-                'nama_jalan' => 'Nama Jalan',
-                'rt' => 'RT',
-                'rw' => 'RW',
-                'kelurahan' => 'Kelurahan',
-                'kecamatan' => 'Kecamatan',
-                'kota' => 'Kota',
-                'provinsi' => 'Provinsi',
-                'kode_pos' => 'Kode Pos',
-                'nama' => 'Nama Lengkap',
-                'tempat_lahir' => 'Tempat Lahir',
-                'tanggal_lahir' => 'Tanggal Lahir',
-                'jenis_kelamin' => 'Jenis Kelamin',
-                'agama' => 'Agama',
-                'status_perkawinan' => 'Status Perkawinan',
-                'pendidikan' => 'Pendidikan',
-                'pekerjaan' => 'Pekerjaan',
-                'hubungan_dalam_keluarga' => 'Hubungan Dalam Keluarga',
-                'nama_ayah' => 'Nama Ayah',
-                'nama_ibu' => 'Nama Ibu',
-                'golongan_darah' => 'Golongan Darah',
-                'kewarganegaraan' => 'Kewarganegaraan',
-            ]
-        );
-
-        // Simpan alamat baru
-        $alamat = Alamat::create([
-            'nama_jalan' => $request->nama_jalan,
-            'rt' => $request->rt,
-            'rw' => $request->rw,
-            'kelurahan' => $request->kelurahan,
-            'kecamatan' => $request->kecamatan,
-            'kota' => $request->kota,
-            'provinsi' => $request->provinsi,
-            'kode_pos' => $request->kode_pos,
+        $validated = $request->validate([
+            'nik' => ['required','digits:16','unique:penduduk,nik'],
+            'no_kk' => ['required','digits:16'],
+            'kepala_keluarga' => 'nullable|string|max:100',
+            'nama_jalan' => 'required|string|max:150',
+            'rt' => 'required|string|max:5',
+            'rw' => 'required|string|max:5',
+            'kelurahan' => 'required|string|max:50',
+            'kecamatan' => 'required|string|max:50',
+            'kota' => 'required|string|max:50',
+            'provinsi' => 'required|string|max:50',
+            'kode_pos' => 'nullable|string|max:10',
+            'nama' => 'required',
+            'tempat_lahir' => 'required',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required',
+            'agama' => 'required',
+            'status_perkawinan' => 'required',
+            'pendidikan' => 'required',
+            'pekerjaan' => 'required',
+            'hubungan_dalam_keluarga' => 'required',
+            'nama_ayah' => 'required',
+            'nama_ibu' => 'required',
+            'golongan_darah' => 'nullable',
+            'kewarganegaraan' => 'required',
         ]);
 
-        // Cek KK, buat baru jika belum ada
+        // Simpan alamat
+        $alamat = Alamat::create($request->only([
+            'nama_jalan','rt','rw','kelurahan','kecamatan','kota','provinsi','kode_pos'
+        ]));
+
+        // Pastikan KK ada
         $kk = KartuKeluarga::withTrashed()->firstOrCreate(
             ['no_kk' => $request->no_kk],
             [
@@ -136,10 +88,11 @@ class PendudukController extends Controller
             ]
         );
 
-        // Simpan data penduduk
+        // Simpan penduduk
         Penduduk::create([
             'nik' => $request->nik,
             'no_kk' => $kk->no_kk,
+            'alamat_id' => $alamat->id,
             'nama' => $request->nama,
             'tempat_lahir' => $request->tempat_lahir,
             'tanggal_lahir' => $request->tanggal_lahir,
@@ -153,26 +106,23 @@ class PendudukController extends Controller
             'nama_ibu' => $request->nama_ibu,
             'golongan_darah' => $request->golongan_darah,
             'kewarganegaraan' => $request->kewarganegaraan,
-            'alamat_id' => $alamat->id,
         ]);
 
-        return redirect()->route('penduduk.index')->with('success', 'Data berhasil ditambahkan');
+        return redirect()->route('penduduk.index')->with('success','Data berhasil ditambahkan');
     }
 
-    // FORM EDIT
     public function edit($nik)
     {
-        $penduduk = Penduduk::with(['alamat', 'kartuKeluarga'])->findOrFail($nik);
+        $penduduk = Penduduk::with(['alamat','kartuKeluarga'])->findOrFail($nik);
         return view('penduduk.edit', compact('penduduk'));
     }
 
-    // UPDATE DATA
     public function update(Request $request, $nik)
     {
         $penduduk = Penduduk::findOrFail($nik);
 
         $validated = $request->validate([
-            'no_kk' => ['required', 'digits:16'],
+            'no_kk' => ['required','digits:16'],
             'kepala_keluarga' => 'nullable|string|max:100',
             'nama_jalan' => 'required|string|max:150',
             'rt' => 'required|string|max:5',
@@ -196,18 +146,11 @@ class PendudukController extends Controller
         ]);
 
         // Update alamat
-        $penduduk->alamat->update([
-            'nama_jalan' => $request->nama_jalan,
-            'rt' => $request->rt,
-            'rw' => $request->rw,
-            'kelurahan' => $request->kelurahan,
-            'kecamatan' => $request->kecamatan,
-            'kota' => $request->kota,
-            'provinsi' => $request->provinsi,
-            'kode_pos' => $request->kode_pos,
-        ]);
+        $penduduk->alamat->update($request->only([
+            'nama_jalan','rt','rw','kelurahan','kecamatan','kota','provinsi','kode_pos'
+        ]));
 
-        // Update atau create KK
+        // Update atau buat KK
         $kk = KartuKeluarga::withTrashed()->firstOrCreate(
             ['no_kk' => $request->no_kk],
             [
@@ -216,9 +159,9 @@ class PendudukController extends Controller
             ]
         );
 
-        // Update penduduk
+        // Update penduduk termasuk no_kk
         $penduduk->update([
-            'no_kk' => $request->no_kk,
+            'no_kk' => $kk->no_kk,
             'nama' => $request->nama,
             'tempat_lahir' => $request->tempat_lahir,
             'tanggal_lahir' => $request->tanggal_lahir,
@@ -234,8 +177,9 @@ class PendudukController extends Controller
             'kewarganegaraan' => $request->kewarganegaraan,
         ]);
 
-        return redirect()->route('penduduk.index')->with('success', 'Data berhasil diperbarui');
+        return redirect()->route('penduduk.index')->with('success','Data berhasil diperbarui');
     }
+
 
     // SOFT DELETE
     public function destroy($nik)

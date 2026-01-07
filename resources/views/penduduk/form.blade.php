@@ -1,5 +1,5 @@
 <!-- ========================= -->
-<!--    DATA PENDUDUK (CARD)   -->
+<!--    FORM EDIT / CREATE      -->
 <!-- ========================= -->
 
 @if ($errors->any())
@@ -13,47 +13,49 @@
     </div>
 @endif
 
-<div class="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
+<form action="{{ isset($penduduk) ? route('penduduk.update', $penduduk->nik) : route('penduduk.store') }}" method="POST" class="space-y-6">
+    @csrf
+    @if(isset($penduduk))
+        @method('PUT')
+    @endif
 
-    <h3 class="text-xl font-bold text-gray-800 pb-2 border-b">Data Penduduk</h3>
-
-    <!-- REUSABLE CLASS -->
     @php 
         $field = "w-full bg-blue-50 border border-blue-200 rounded-xl py-3 px-4 
                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition";
+        $alamat = $penduduk->alamat ?? null;
     @endphp
 
-    <!-- === Fields === -->
-    <div class="space-y-6">
+    <!-- ========================= -->
+    <!--      DATA PENDUDUK        -->
+    <!-- ========================= -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
+
+        <h3 class="text-xl font-bold text-gray-800 pb-2 border-b">Data Penduduk</h3>
 
         <!-- NIK -->
-        <!-- <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">NIK</label>
-            <input type="text" name="nik" class="{{ $field }}"
-                value="{{ old('nik', $penduduk->nik ?? '') }}"
-                {{ isset($penduduk) ? 'readonly' : '' }}>
-        </div> -->
-
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">NIK</label>
-            <input type="number" name="nik"
+            <input type="number" name="nik" id="nik"
                 class="{{ $field }} @error('nik') border-red-500 bg-red-50 @enderror"
                 value="{{ old('nik', $penduduk->nik ?? '') }}"
                 {{ isset($penduduk) ? 'readonly' : '' }}>
-
             @error('nik')
-                <p class="text-sm text-red-600 mt-2">
-                    ⚠️ {{ $message }}
-                </p>
+                <p class="text-sm text-red-600 mt-2">⚠️ {{ $message }}</p>
             @enderror
         </div>
 
-        <!-- No KK -->
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">No KK</label>
-            <input type="number" name="no_kk" class="{{ $field }}"
-                value="{{ old('no_kk', $penduduk->no_kk ?? '') }}">
-        </div>
+<!-- No KK (otomatis mengikuti NIK / KK) -->
+@php
+    // Ambil no_kk: prioritas -> old input -> penduduk->no_kk -> relasi KK -> fallback NIK
+    $no_kk_value = old('no_kk', $penduduk->no_kk ?? $penduduk->kartuKeluarga->no_kk ?? $penduduk->nik ?? '');
+@endphp
+
+<div>
+    <label class="block text-sm font-semibold text-gray-700 mb-2">No KK</label>
+    <input type="number" name="no_kk" id="no_kk" class="{{ $field }}" value="{{ $no_kk_value }}">
+</div>
+
+
 
         <!-- Nama -->
         <div>
@@ -97,9 +99,7 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">Status Perkawinan</label>
             <select name="status_perkawinan" class="{{ $field }}">
                 @foreach($status as $s)
-                    <option value="{{ $s }}" {{ old('status_perkawinan', $penduduk->status_perkawinan ?? '') == $s ? 'selected' : '' }}>
-                        {{ $s }}
-                    </option>
+                    <option value="{{ $s }}" {{ old('status_perkawinan', $penduduk->status_perkawinan ?? '') == $s ? 'selected' : '' }}>{{ $s }}</option>
                 @endforeach
             </select>
         </div>
@@ -110,9 +110,7 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">Pendidikan</label>
             <select name="pendidikan" class="{{ $field }}">
                 @foreach($pendidikanList as $p)
-                    <option value="{{ $p }}" {{ old('pendidikan', $penduduk->pendidikan ?? '') == $p ? 'selected' : '' }}>
-                        {{ $p }}
-                    </option>
+                    <option value="{{ $p }}" {{ old('pendidikan', $penduduk->pendidikan ?? '') == $p ? 'selected' : '' }}>{{ $p }}</option>
                 @endforeach
             </select>
         </div>
@@ -130,9 +128,7 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">Hubungan dalam Keluarga</label>
             <select name="hubungan_dalam_keluarga" class="{{ $field }}">
                 @foreach($hubungan as $h)
-                    <option value="{{ $h }}" {{ old('hubungan_dalam_keluarga', $penduduk->hubungan_dalam_keluarga ?? '') == $h ? 'selected' : '' }}>
-                        {{ $h }}
-                    </option>
+                    <option value="{{ $h }}" {{ old('hubungan_dalam_keluarga', $penduduk->hubungan_dalam_keluarga ?? '') == $h ? 'selected' : '' }}>{{ $h }}</option>
                 @endforeach
             </select>
         </div>
@@ -150,15 +146,13 @@
                 value="{{ old('nama_ibu', $penduduk->nama_ibu ?? '') }}">
         </div>
 
-        <!-- Goldar -->
+        <!-- Golongan Darah -->
         <div>
             @php $goldar = ['A','B','AB','O','-']; @endphp
             <label class="block text-sm font-semibold text-gray-700 mb-2">Golongan Darah</label>
             <select name="golongan_darah" class="{{ $field }}">
                 @foreach($goldar as $g)
-                    <option value="{{ $g }}" {{ old('golongan_darah', $penduduk->golongan_darah ?? '') == $g ? 'selected' : '' }}>
-                        {{ $g }}
-                    </option>
+                    <option value="{{ $g }}" {{ old('golongan_darah', $penduduk->golongan_darah ?? '') == $g ? 'selected' : '' }}>{{ $g }}</option>
                 @endforeach
             </select>
         </div>
@@ -171,19 +165,12 @@
         </div>
 
     </div>
-</div>
 
-
-<!-- ========================= -->
-<!--         ALAMAT (CARD)     -->
-<!-- ========================= -->
-<div class="bg-white p-6 rounded-2xl shadow-sm border mt-10 space-y-6">
-
-    <h3 class="text-xl font-bold text-gray-800 pb-2 border-b">Alamat</h3>
-
-    @php $alamat = $penduduk->alamat ?? null; @endphp
-
-    <div class="space-y-6">
+    <!-- ========================= -->
+    <!--         ALAMAT            -->
+    <!-- ========================= -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border mt-10 space-y-6">
+        <h3 class="text-xl font-bold text-gray-800 pb-2 border-b">Alamat</h3>
 
         @php $alamatField = $field; @endphp
 
@@ -234,15 +221,24 @@
             <input type="text" name="kode_pos" class="{{ $alamatField }}"
                 value="{{ old('kode_pos', $alamat->kode_pos ?? $defaultAlamat['kode_pos']) }}">
         </div>
-
     </div>
-</div>
+
+    <!-- ========================= -->
+    <!--         BUTTON            -->
+    <!-- ========================= -->
+    <div class="flex justify-center mt-10">
+        <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-10 rounded-xl shadow">
+            Simpan Data
+        </button>
+    </div>
+</form>
 
 <!-- ========================= -->
-<!--         BUTTON            -->
+<!--     SCRIPT NIK -> No KK     -->
 <!-- ========================= -->
-<div class="flex justify-center mt-10">
-    <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-10 rounded-xl shadow">
-        Simpan Data
-    </button>
-</div>
+<script>
+document.getElementById('nik')?.addEventListener('input', function () {
+    document.getElementById('no_kk').value = this.value;
+});
+</script>

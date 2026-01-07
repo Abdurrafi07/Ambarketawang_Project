@@ -37,9 +37,14 @@ class Penduduk extends Model
 
     protected $dates = ['deleted_at'];
 
+    // public function kartuKeluarga()
+    // {
+    //     return $this->belongsTo(KartuKeluarga::class, 'no_kk', 'no_kk');
+    // }
+
     public function kartuKeluarga()
     {
-        return $this->belongsTo(KartuKeluarga::class, 'no_kk', 'no_kk');
+        return $this->belongsTo(KartuKeluarga::class, 'no_kk', 'no_kk')->withDefault();
     }
 
     public function alamat()

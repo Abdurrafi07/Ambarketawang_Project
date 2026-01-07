@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             AlamatSeeder::class,
             KartuKeluargaSeeder::class,
             PendudukSeeder::class,
+            AdminUserSeeder::class,
         ]);
     }
 }

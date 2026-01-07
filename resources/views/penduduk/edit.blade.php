@@ -1,15 +1,5 @@
 @extends('layouts.form')
 
-@php
-    $defaultAlamat = [
-        'kelurahan' => 'Patukan, Ambarketawang',
-        'kecamatan' => 'Gamping',
-        'kota' => 'Sleman',
-        'provinsi' => 'Daerah Istimewa Yogyakarta',
-        'kode_pos' => '55294',
-    ];
-@endphp
-
 @section('content')
 <div class="container max-w-3xl mx-auto">
 
