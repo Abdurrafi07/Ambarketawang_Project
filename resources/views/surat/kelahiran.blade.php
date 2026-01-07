@@ -12,7 +12,7 @@
     <p>KABUPATEN/KOTA : SLEMAN</p>
   </div>
   <h1 class="text-xl font-bold mt-4 uppercase">Surat Keterangan Kelahiran</h1>
-  <p class="text-gray-700">Nomor : </p>
+  <p class="text-gray-700">Nomor: ............................................................ </p>
   <div class="border-b border-gray-300 my-4"></div>
 </div>
 

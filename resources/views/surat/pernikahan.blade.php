@@ -12,7 +12,7 @@
     <p>KABUPATEN/KOTA : SLEMAN</p>
   </div>
   <h1 class="text-xl font-bold mt-4 uppercase">Surat Keterangan Pernikahan</h1>
-  <p class="text-gray-700">Nomor : 052/AMB/VI/2025</p>
+  <p class="text-gray-700">Nomor: ............................................................</p>
   <div class="border-b border-gray-300 my-4"></div>
 </div>
 

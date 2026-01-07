@@ -10,7 +10,7 @@
     <!-- Header -->
     <section class="border-b-2 border-blue-600 pb-4 mb-6 text-center">
         <h1 class="text-2xl font-bold uppercase tracking-wide text-blue-700">Formulir Surat Keterangan Domisili</h1>
-        <p class="text-sm mt-1 text-gray-700">No : .........................................................</p>
+        <p class="text-sm mt-1 text-gray-700">No: .........................................................</p>
 
         <!-- NOMOR SURAT -->
         <div class="bg-gray-50 rounded-xl p-4 mb-6">
